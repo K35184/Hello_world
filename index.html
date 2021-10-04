@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windy</title>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+    <script src="https://api.windy.com/assets/map-forecast/libBoot.js"></script>
+</head>
+<body>
+    <input id="place" type="text">
+    <button onclick="btnclicked()">Submit</button>
+    <div id="windy"></div>
+        <script>
+        
+        var Lat, Long;
+let city_para = 'q=' + 'Panipat'
+let geo_para = 'lat=' + Lat + '&lon=' + Long
+// API call function
+
+
+
+/////////User Location /////////////
+
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else { 
+    console.log( "Geolocation is not supported by this browser.");
+  }
+
+  function showPosition(position) {
+    Lat = position.coords.latitude
+    Long = position.coords.longitude
+
+    console.log(Lat, Long)
+
+    openweatherapicall('onecall', geo_para);
+
+
+///////// Name API //////////
+
+openweatherapicall('weather', city_para);
+////////// Windy App //////////
+  const options = {
+    // Required: API key
+    key: 'gHF8mMuTokQ5MDr0FmXRR129Kbwr91nO', // REPLACE WITH YOUR KEY !!!
+
+    // Put additional console output
+    verbose: true,
+
+    // Optional: Initial state of the map
+    lat: Lat,
+    lon: Long,
+    zoom: 80,
+};
+
+// Initialize Windy API
+windyInit(options, windyAPI => {
+    // windyAPI is ready, and contain 'map', 'store',
+    // 'picker' and other usefull stuff
+
+    const { map } = windyAPI;
+    // .map is instance of Leaflet map
+
+    L.popup()
+        .setLatLng([Lat, Long])
+        .setContent(json.name)
+        .openOn(map);
+});
+
+}
+
+
+//////Button////////
+
+function btnclicked(){
+  man_place = document.getElementById('place').value;
+  
+fetch('https://api.openweathermap.org/data/2.5/weather?q='+ man_place+'&appid=11ef10ae8365daf4d40f72cb0bab30ad')
+.then(function(response) {
+  return response.json();
+})
+.then(function(json) {
+  console.log(json)
+
+  const options = {
+    // Required: API key
+    key: 'gHF8mMuTokQ5MDr0FmXRR129Kbwr91nO', // REPLACE WITH YOUR KEY !!!
+
+    // Put additional console output
+    verbose: true,
+
+    // Optional: Initial state of the map
+    lat: json.coord.lat,
+    lon: json.coord.lon,
+    zoom: 80,
+};
+
+// Initialize Windy API
+windyInit(options, windyAPI => {
+    // windyAPI is ready, and contain 'map', 'store',
+    // 'picker' and other usefull stuff
+
+    const { map } = windyAPI;
+    // .map is instance of Leaflet map
+
+    L.popup()
+        .setLatLng([json.coord.lat, json.coord.lon])
+        .setContent(json.name)
+        .openOn(map);
+});
+
+});
+}
+
+
+const openweatherapicall = function (type, parameter){
+  fetch('https://api.openweathermap.org/data/2.5/' +  type + '?' + parameter + '&appid=11ef10ae8365daf4d40f72cb0bab30ad')
+.then(function(response) {
+  return response.json();
+})
+.then(function(json) {
+  console.log(json)
+});
+}
+        
+        </script>
+</body>
+</html>
